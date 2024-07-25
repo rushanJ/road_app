@@ -1,4 +1,3 @@
-// App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useStoreState } from 'easy-peasy';
@@ -7,6 +6,7 @@ import ServiceProvider from './pages/ServiceProvider';
 import Supervisor from './pages/Supervisor';
 import Login from './pages/Login';
 import Navbar from './components/Navbar';
+import LocationDetails from './pages/LocationDetails'; // Import the LocationDetails component
 import './App.css';
 import ProtectedRoute from './ProtectedRoute';
 import './index.css';
@@ -50,6 +50,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Supervisor />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/location/:id"
+          element={
+            <ProtectedRoute>
+              <LocationDetails />
             </ProtectedRoute>
           }
         />

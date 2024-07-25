@@ -25,7 +25,9 @@ const Map = () => {
       />
       {locations.map((location, index) => (
         <Marker key={index} position={[location.lat, location.lng]}>
-         
+          <Popup style={styles.popup}>
+            {location.name}
+          </Popup>
         </Marker>
       ))}
     </MapContainer>
@@ -35,7 +37,8 @@ const Map = () => {
 const styles = {
   map: {
     height: '100%',
-    width: '100%'
+    width: '100%',
+    zIndex: 5000,
   },
   popup: {
     textAlign: 'center'

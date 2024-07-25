@@ -10,25 +10,28 @@ const store = createStore({
   }),
   locations: [
     {
+      id:1,
       lat: 51.505,
       lng: -0.09,
       name: 'Location 1',
       status: 1,
-      image: 'https://via.placeholder.com/150'
+      image: 'https://via.placeholder.com/50'
     },
     {
+      id:2,
       lat: 51.51,
       lng: -0.1,
       name: 'Location 2',
       status: 2,
-      image: 'https://via.placeholder.com/150'
+      image: 'https://via.placeholder.com/50'
     },
     {
+      id:3,
       lat: 51.52,
       lng: -0.12,
       name: 'Location 3',
       status: 3,
-      image: 'https://via.placeholder.com/150'
+      image: 'https://via.placeholder.com/50'
     }
   ],
   selectedLocation: null,
