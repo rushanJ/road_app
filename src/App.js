@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Navbar from './components/Navbar';
 import './App.css';
 import ProtectedRoute from './ProtectedRoute';
+import './index.css';
 
 const PrivateRoute = ({ element, ...rest }) => {
   const user = useStoreState((state) => state.user);

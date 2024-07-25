@@ -42,80 +42,42 @@ const Home = () => {
   
 
   return (
-    <div style={styles.container}>
-      <div style={styles.sidebar}>
-        <h2>Locations</h2>
-        <ul style={styles.locationList}>
+    <div className="flex h-screen">
+      <div className="w-1/4 bg-gray-100 p-4 overflow-y-auto">
+        <h2 className="text-2xl font-bold mb-4">Locations</h2>
+        <ul className="space-y-2">
           {locations.map((location, index) => (
-            <li key={index} style={styles.locationItem}>
-              <span onClick={() => handleLocationClick(location)}>
+            <li key={index} className="flex items-center justify-between bg-white p-2 rounded shadow-md">
+              <span className="cursor-pointer" onClick={() => handleLocationClick(location)}>
                 {location.name} - ({location.lat}, {location.lng})
               </span>
-              <button onClick={() => removeLocation(index)} style={styles.removeButton}>Remove</button>
+              <button
+                onClick={() => removeLocation(index)}
+                className="ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700"
+              >
+                Remove
+              </button>
             </li>
           ))}
         </ul>
-        <button onClick={handleAddLocation} style={styles.addButton}>Add Location</button>
+        <button
+          onClick={handleAddLocation}
+          className="mt-4 w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+        >
+          Add Location
+        </button>
       </div>
-      <div style={styles.mainContent}>
+      <div className="flex-1 p-4">
         <Map onMarkerClick={handleLocationClick} />
         <LocationModal show={showModal} onClose={handleCloseModal} location={selectedLocation} />
+      </div>
+      <div className='fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-900 bg-opacity-50 z-50'>
+        hello
       </div>
     </div>
   );
 };
 
-const styles = {
-  container: {
-    display: 'flex',
-    height: '100vh'
-  },
-  sidebar: {
-    flex: 2,
-    backgroundColor: '#f0f0f0',
-    padding: '20px',
-    overflowY: 'auto'
-  },
-  mainContent: {
-    flex: 10,
-    backgroundColor: '#fff',
-    padding: '20px',
-    position: 'relative'
-  },
-  locationList: {
-    listStyleType: 'none',
-    padding: 0
-  },
-  locationItem: {
-    marginBottom: '10px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    cursor: 'pointer',
-    padding: '5px 10px',
-    borderRadius: '5px',
-    backgroundColor: '#e0e0e0',
-    boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)'
-  },
-  removeButton: {
-    marginLeft: '10px',
-    padding: '5px',
-    backgroundColor: '#f44336',
-    color: 'white',
-    border: 'none',
-    cursor: 'pointer',
-    borderRadius: '3px'
-  },
-  addButton: {
-    marginTop: '10px',
-    padding: '10px',
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    border: 'none',
-    cursor: 'pointer',
-    borderRadius: '3px'
-  }
-};
 
 const LocationModal = ({ show, onClose, location }) => {
   const statusLabels = [
