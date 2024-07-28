@@ -34,21 +34,21 @@ const Home = () => {
               <span className="cursor-pointer" onClick={() => handleLocationClick(location)}>
                 {location.name} - ({location.lat}, {location.lng})
               </span>
-              <button
+              {/* <button
                 onClick={() => removeLocation(location.id)}
                 className="ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700"
               >
                 Remove
-              </button>
+              </button> */}
             </li>
           ))}
         </ul>
-        <button
+        {/* <button
           onClick={handleAddLocation}
           className="mt-4 w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
         >
           Add Location
-        </button>
+        </button> */}
       </div>
       <div className="flex-1 p-4">
         <Map />
