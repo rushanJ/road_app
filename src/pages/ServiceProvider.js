@@ -1,15 +1,12 @@
-// src/ServiceProvider.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Form, Button, Table } from "react-bootstrap"; // Adjust if using a different library
 import { useStoreState, useStoreActions } from "easy-peasy";
 import { Link } from "react-router-dom";
 
 const ServiceProvider = () => {
-  const serviceProviders = useStoreState((state) => state.serviceProviders);
+  const [serviceProviders, setServiceProviders] = useState([]);
   const employees = useStoreState((state) => state.employees);
-  const addServiceProvider = useStoreActions(
-    (actions) => actions.addServiceProvider
-  );
+  const addServiceProvider = useStoreActions((actions) => actions.addServiceProvider);
   const addEmployee = useStoreActions((actions) => actions.addEmployee);
 
   const [showModal, setShowModal] = useState(false);
@@ -32,6 +29,20 @@ const ServiceProvider = () => {
   });
   const [selectedProviderRegNo, setSelectedProviderRegNo] = useState(null);
 
+  useEffect(() => {
+    const fetchServiceProviders = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BASE_URL}/service-providers`);
+        const data = await response.json();
+        setServiceProviders(data);
+      } catch (error) {
+        console.error('Failed to fetch service providers', error);
+      }
+    };
+
+    fetchServiceProviders();
+  }, []);
+
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
 
@@ -51,16 +62,37 @@ const ServiceProvider = () => {
     setNewEmployee({ ...newEmployee, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    addServiceProvider(newServiceProvider);
-    handleCloseModal();
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/service-providers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newServiceProvider),
+      });
+      const data = await response.json();
+      addServiceProvider(data); // Add the new service provider to the store
+      setServiceProviders([...serviceProviders, data]); // Update local state
+      handleCloseModal();
+    } catch (error) {
+      console.error('Failed to add service provider', error);
+    }
   };
 
-  const handleEmployeeSubmit = (e) => {
+  const handleEmployeeSubmit = async (e) => {
     e.preventDefault();
-    addEmployee({ ...newEmployee, provider_reg_no: selectedProviderRegNo });
-    handleCloseEmployeeModal();
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/employees`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...newEmployee, provider_reg_no: selectedProviderRegNo }),
+      });
+      const data = await response.json();
+      addEmployee(data); // Add the new employee to the store
+      handleCloseEmployeeModal();
+    } catch (error) {
+      console.error('Failed to add employee', error);
+    }
   };
 
   return (
@@ -112,7 +144,7 @@ const ServiceProvider = () => {
         </tbody>
       </Table>
       <Modal
-      className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-900 bg-opacity-80 z-50"
+        className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-900 bg-opacity-80 z-50"
         show={showModal}
         onHide={handleCloseModal}
         dialogClassName="flex items-center h-full justify-center "
@@ -120,99 +152,103 @@ const ServiceProvider = () => {
       >
         <Modal.Header closeButton className="bg-red-50 pt-10 px-10 ">
           <Modal.Title className="text-xl font-bold flex justify-between items-center">
-
-            <p >Add Service Provider</p>
+            <p>Add Service Provider</p>
             <p className="text-sm font-normal">close</p>
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body className="bg-red-50 px-10 pb-10" >
+        <Modal.Body className="bg-red-50 px-10 pb-10">
           <form onSubmit={handleSubmit} className="space-y-2">
-              <div className="flex items-center">
-                <label
-                  className="w-1/3  text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="formUsername"
-                >
-                  Name
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="name"
-                  type="text"
-                  placeholder="Name"
-                  value={newServiceProvider.name}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="flex items-center">
-                <label
-                  className="w-1/3 text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="formRegNo"
-                >
-                  Reg No
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="reg_no"
-                  type="text"
-                  placeholder="Reg No"
-                  value={newServiceProvider.reg_no}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="flex items-center">
-                <label
-                  className="w-1/3  text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="formUsername"
-                >
-                  Address
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="formAddress"
-                  type="text"
-                  placeholder="Address"
-                  value={newServiceProvider.address}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="flex items-center">
-                <label
-                  className="w-1/3  text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="formNoOfEmployees"
-                >
-                  No of Employees
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="no_of_employees"
-                  type="number"
-                  placeholder="No of Employees"
-                  value={newServiceProvider.no_of_employees}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div> 
-              <div className="flex items-center">
-                <label
-                  className="w-1/3  text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="formServiceType"
-                >
-                  Service type
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="service_type"
-                  type="text"
-                  placeholder="Service type"
-                  value={newServiceProvider.service_type}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <Button
+            <div className="flex items-center">
+              <label
+                className="w-1/3  text-gray-700 text-sm font-bold mb-2"
+                htmlFor="formUsername"
+              >
+                Name
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="name"
+                type="text"
+                placeholder="Name"
+                name="name"
+                value={newServiceProvider.name}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="flex items-center">
+              <label
+                className="w-1/3 text-gray-700 text-sm font-bold mb-2"
+                htmlFor="formRegNo"
+              >
+                Reg No
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="reg_no"
+                type="text"
+                placeholder="Reg No"
+                name="reg_no"
+                value={newServiceProvider.reg_no}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="flex items-center">
+              <label
+                className="w-1/3  text-gray-700 text-sm font-bold mb-2"
+                htmlFor="formUsername"
+              >
+                Address
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="formAddress"
+                type="text"
+                placeholder="Address"
+                name="address"
+                value={newServiceProvider.address}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="flex items-center">
+              <label
+                className="w-1/3  text-gray-700 text-sm font-bold mb-2"
+                htmlFor="formNoOfEmployees"
+              >
+                No of Employees
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="no_of_employees"
+                type="number"
+                placeholder="No of Employees"
+                name="no_of_employees"
+                value={newServiceProvider.no_of_employees}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="flex items-center">
+              <label
+                className="w-1/3  text-gray-700 text-sm font-bold mb-2"
+                htmlFor="formServiceType"
+              >
+                Service type
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="service_type"
+                type="text"
+                placeholder="Service type"
+                name="service_type"
+                value={newServiceProvider.service_type}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <Button
               variant="primary"
               type="submit"
               className="w-full bg-blue-500 hover:bg-blue-700"
@@ -220,9 +256,6 @@ const ServiceProvider = () => {
               Add Service Provider
             </Button>
           </form>
-          
-            
-          
         </Modal.Body>
       </Modal>
 

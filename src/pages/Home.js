@@ -1,12 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { useNavigate } from 'react-router-dom';
 import Map from '../components/Map';
 
 const Home = () => {
   const locations = useStoreState((state) => state.locations);
-  const removeLocation = useStoreActions((actions) => actions.removeLocation);
+  const setLocations = useStoreActions((actions) => actions.setLocations);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BASE_URL}/issueapi`);
+        const data = await response.json();
+        setLocations(data);
+      } catch (error) {
+        console.error('Failed to fetch locations', error);
+      }
+    };
+
+    fetchLocations();
+  }, [setLocations]);
 
   const handleLocationClick = (location) => {
     navigate(`/location/${location.id}`);
